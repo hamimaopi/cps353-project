@@ -1,33 +1,37 @@
-## Checkpoint 2: Computation
+## Checkpoint 2: Draft the APIs
 
-### Count the Number of Prime Numbers Below the Input
+### 1. Computation Selection
+**Count the Number of Prime Numbers Below the Input**
 
-The computation will count how many prime numbers are smaller than a given positive integer.
+The chosen computation counts how many prime numbers are smaller than a given positive integer input.
 
-The input must be a single positive integer greater than 0 and less than `Integer.MAX_VALUE`.
+- **Input Requirement**: A single positive integer greater than 0 and less than `Integer.MAX_VALUE`.
+- **CPU Intensive Nature**: The prime counting algorithm checks each number below the input for primality via nested divisibility loops, making it CPU intensive for performance benchmarking.
+- **Sample Input and Output**:
 
-For each input number, the computation checks the numbers below it and determines which numbers are prime. It then returns the total number of prime numbers found.
+| Input | Prime Numbers Below Input | Output |
+| ----- | ------------------------- | -----: |
+| 10    | 2, 3, 5, 7                |      4 |
+| 20    | 2, 3, 5, 7, 11, 13, 17, 19|      8 |
+| 100   | 2, 3, 5, 7, ... , 97      |     25 |
 
-For example, if the input is `10`, the prime numbers below 10 are:
+---
 
-`2, 3, 5, 7`
+### 2. System Architecture Diagram
+The system architecture includes three distinct API boundaries:
 
-Therefore, the result is `4`.
+1. **Network API (`UserComputeEngineAPI`)**: Network boundary between User/Client and the Compute Engine process.
+2. **Process API (`DataStorageAPI`)**: Process boundary between Compute Engine (Job Manager) and Data Storage System, handling both reading input and writing computed output.
+3. **Conceptual API (`ComputationAPI`)**: Conceptual boundary situated **inside** the Compute Engine process, connecting the Job Manager/Orchestrator to the Computation Component.
 
-If the input is `20`, the prime numbers below 20 are:
-
-`2, 3, 5, 7, 11, 13, 17, 19`
-
-Therefore, the result is `8`.
-
-### Sample Input and Output
-
-| Input | Prime Numbers Below Input                | Output |
-| ----- | ---------------------------------------- | -----: |
-| 10    | 2, 3, 5, 7                               |      4 |
-| 20    | 2, 3, 5, 7, 11, 13, 17, 19               |      8 |
-| 100   | 2, 3, 5, 7, 11, 13, 17, 19, 23, ... , 97 |     25 |
-
-### System Diagram
+Each boundary features explicit request and response flows.
 
 ![System Diagram](checkpoint2.png)
+
+---
+
+### 3. API Design & Key Features
+
+- **Network API (`UserComputeEngineAPI`)**: Uses generic `InputConfig` and `OutputConfig` objects instead of hardcoded strings. Supports both custom delimiters via `DelimiterConfig` and optional default delimiters (`DelimiterConfig.defaultConfig()`).
+- **Process API (`DataStorageAPI`)**: Provides methods to read input data (`readInputData`) AND write computed results back out (`writeOutputData`) using generic `InputConfig` and `OutputConfig` location objects.
+- **Conceptual API (`ComputationAPI`)**: Operates inside the Compute Engine process. Wraps primitive values inside flexible objects (`ComputationRequest` and `ComputationResult`).
