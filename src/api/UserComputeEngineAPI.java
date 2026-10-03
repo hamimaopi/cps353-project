@@ -4,9 +4,10 @@ import project.annotations.NetworkAPI;
 
 @NetworkAPI
 public interface UserComputeEngineAPI {
-    void configureJob(
-            String inputSource,
-            String outputDestination,
-            char delimiter
-    );
+
+    // Method allowing custom delimiters
+    JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig);
+
+    // Method allowing default delimiters
+    JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination);
 }

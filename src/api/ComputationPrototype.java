@@ -6,7 +6,7 @@ public class ComputationPrototype {
 
     @ConceptualAPIPrototype
     public void prototypeComputation(ComputationAPI api) {
-        int input = 20;
-        int result = api.countPrimesBelow(input);
+        ComputationRequest request = new ComputationRequest(20);
+        ComputationResult result = api.countPrimesBelow(request);
     }
 }

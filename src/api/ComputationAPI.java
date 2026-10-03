@@ -5,5 +5,5 @@ import project.annotations.ConceptualAPI;
 @ConceptualAPI
 public interface ComputationAPI {
 
-    int countPrimesBelow(int input);
+    ComputationResult countPrimesBelow(ComputationRequest request);
 }
