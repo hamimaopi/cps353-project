@@ -1,16 +1,17 @@
 package api;
 
-public class ComputeJobResponse {
+public class JobResult {
+    public enum Status { SUCCESS, FAILURE }
 
-    private final ComputeJobStatus status;
+    private final Status status;
     private final String message;
 
-    public ComputeJobResponse(ComputeJobStatus status, String message) {
+    public JobResult(Status status, String message) {
         this.status = status;
         this.message = message;
     }
 
-    public ComputeJobStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 

@@ -1,0 +1,14 @@
+package api;
+
+public class FileOutputConfig implements OutputConfig {
+    private final String filePath;
+
+    public FileOutputConfig(String filePath) {
+        this.filePath = filePath;
+    }
+
+    @Override
+    public String getDestinationDetails() {
+        return filePath;
+    }
+}

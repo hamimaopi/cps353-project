@@ -9,17 +9,12 @@ public class DataStorageAPIImpl implements DataStorageAPI {
     }
 
     @Override
-    public List<Integer> readInputData(String inputSource) {
+    public List<Integer> readInputData(InputConfig inputSource) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<Integer> readInputData(InputConfig inputConfig) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void writeOutputData(OutputConfig outputConfig, List<String> outputData) {
-        // Empty implementation for checkpoint 3
+    public WriteResult writeOutputData(OutputConfig outputDestination, List<String> outputData) {
+        return new WriteResult(WriteResult.Status.FAILURE, "Not yet implemented");
     }
 }

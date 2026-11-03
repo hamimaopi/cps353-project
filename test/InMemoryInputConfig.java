@@ -14,4 +14,9 @@ public class InMemoryInputConfig implements InputConfig {
     public List<Integer> getInputs() {
         return Collections.unmodifiableList(inputs);
     }
+
+    @Override
+    public String getSourceDetails() {
+        return "in-memory";
+    }
 }

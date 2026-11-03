@@ -1,6 +1,5 @@
 import api.ComputationAPI;
 import api.ComputationAPIImpl;
-import api.ComputeJobRequest;
 import api.DataStorageAPI;
 import api.UserComputeEngineAPI;
 import api.UserComputeEngineAPIImpl;
@@ -21,8 +20,7 @@ public class ComputeEngineIntegrationTest {
         InMemoryInputConfig inputConfig = new InMemoryInputConfig(List.of(1, 10, 25));
         InMemoryOutputConfig outputConfig = new InMemoryOutputConfig();
 
-        ComputeJobRequest request = new ComputeJobRequest(inputConfig, outputConfig);
-        realEngine.compute(request);
+        realEngine.configureJob(inputConfig, outputConfig);
 
         Assertions.assertEquals(List.of("0", "4", "9"), outputConfig.getOutputs());
     }

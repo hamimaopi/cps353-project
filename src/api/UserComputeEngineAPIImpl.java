@@ -11,13 +11,12 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
     }
 
     @Override
-    public void configureJob(String inputSource, String outputDestination, char delimiter) {
-        // Empty implementation for checkpoint 3
+    public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig) {
+        return new JobResult(JobResult.Status.FAILURE, "Not yet implemented");
     }
 
     @Override
-    public ComputeJobResponse compute(ComputeJobRequest request) {
-        // Returns default failure response for checkpoint 3
-        return new ComputeJobResponse(ComputeJobStatus.FAILURE, "Not yet implemented");
+    public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination) {
+        return new JobResult(JobResult.Status.FAILURE, "Not yet implemented");
     }
 }

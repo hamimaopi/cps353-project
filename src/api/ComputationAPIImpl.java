@@ -6,7 +6,7 @@ public class ComputationAPIImpl implements ComputationAPI {
     }
 
     @Override
-    public int countPrimesBelow(int input) {
-        return 0;
+    public ComputationResult countPrimesBelow(ComputationRequest request) {
+        return new ComputationResult(0);
     }
 }

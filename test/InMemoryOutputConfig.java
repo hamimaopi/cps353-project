@@ -18,4 +18,9 @@ public class InMemoryOutputConfig implements OutputConfig {
     public List<String> getOutputs() {
         return outputs;
     }
+
+    @Override
+    public String getDestinationDetails() {
+        return "in-memory";
+    }
 }
