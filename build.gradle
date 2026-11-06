@@ -33,7 +33,8 @@ test {
         // Exclude Checkpoint 1 test (gets rate-limited by GitHub API in CI)
         excludeTestsMatching "Checkpoint1TestSuite"
         // Exclude failing TDD smoke and integration tests so CI passes as required
-        excludeTestsMatching "Test*"
+        excludeTestsMatching "TestDataStorageAPI"
+        excludeTestsMatching "TestUserComputeEngineAPI"
         excludeTestsMatching "ComputeEngineIntegrationTest"
     }
 }
