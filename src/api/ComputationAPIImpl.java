@@ -10,6 +10,8 @@ public class ComputationAPIImpl implements ComputationAPI {
         if (request == null) {
             throw new IllegalArgumentException("Computation request cannot be null");
         }
+        // Parameter request.getInputNumber() does not require validation because all integer values
+        // (including negative numbers and zero) are valid bounds for prime counting (bounds <= 2 produce 0 primes).
         int upperBound = request.getInputNumber();
         int primeCount = countPrimesLessThan(upperBound);
         return new ComputationResult(primeCount);

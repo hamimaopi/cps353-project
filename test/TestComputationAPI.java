@@ -44,5 +44,10 @@ public class TestComputationAPI {
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> computation.countPrimesBelow(null));
     }
+
+    @Test
+    public void testComputationResultNegativePrimeCountThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComputationResult(-1));
+    }
 }
 

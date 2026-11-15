@@ -83,5 +83,51 @@ public class TestDataStorageAPI {
 
         Assertions.assertEquals(WriteResult.Status.FAILURE, writeResult.getStatus());
     }
+
+    @Test
+    public void testReadInputDataNullConfigReturnsEmpty() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        List<Integer> result = dataStorage.readInputData(null);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testReadInputDataBlankPathReturnsEmpty() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        List<Integer> result = dataStorage.readInputData(() -> "   ");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testWriteOutputDataNullOutputDataReturnsFailure() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        FileOutputConfig outputConfig = new FileOutputConfig("out.txt");
+        WriteResult writeResult = dataStorage.writeOutputData(outputConfig, null);
+
+        Assertions.assertEquals(WriteResult.Status.FAILURE, writeResult.getStatus());
+        Assertions.assertTrue(writeResult.getMessage().toLowerCase().contains("null"));
+    }
+
+    @Test
+    public void testWriteOutputDataBlankPathReturnsFailure() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        WriteResult writeResult = dataStorage.writeOutputData(() -> "   ", List.of("1"));
+
+        Assertions.assertEquals(WriteResult.Status.FAILURE, writeResult.getStatus());
+    }
+
+    @Test
+    public void testFileInputConfigNullPathThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FileInputConfig(null));
+    }
+
+    @Test
+    public void testFileOutputConfigNullPathThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FileOutputConfig(null));
+    }
 }
 

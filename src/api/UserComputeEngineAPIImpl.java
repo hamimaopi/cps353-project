@@ -10,13 +10,19 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
     private final ComputationAPI computationAPI;
 
     public UserComputeEngineAPIImpl(DataStorageAPI dataStorageAPI, ComputationAPI computationAPI) {
+        if (dataStorageAPI == null) {
+            throw new IllegalArgumentException("DataStorageAPI cannot be null");
+        }
+        if (computationAPI == null) {
+            throw new IllegalArgumentException("ComputationAPI cannot be null");
+        }
         this.dataStorageAPI = dataStorageAPI;
         this.computationAPI = computationAPI;
     }
 
     @Override
     public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig) {
-        JobResult validationResult = validateJobParameters(inputSource, outputDestination);
+        JobResult validationResult = validateJobParameters(inputSource, outputDestination, delimiterConfig);
         if (validationResult != null) {
             return validationResult;
         }
@@ -32,15 +38,20 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
 
     @Override
     public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination) {
+        // Delegates to configureJob(InputConfig, OutputConfig, DelimiterConfig) using default DelimiterConfig;
+        // parameter validation for inputSource and outputDestination is performed in that method.
         return configureJob(inputSource, outputDestination, DelimiterConfig.defaultConfig());
     }
 
-    private JobResult validateJobParameters(InputConfig inputSource, OutputConfig outputDestination) {
+    private JobResult validateJobParameters(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig) {
         if (inputSource == null) {
             return new JobResult(JobResult.Status.FAILURE, "Input source cannot be null");
         }
         if (outputDestination == null) {
             return new JobResult(JobResult.Status.FAILURE, "Output destination cannot be null");
+        }
+        if (delimiterConfig == null) {
+            return new JobResult(JobResult.Status.FAILURE, "Delimiter config cannot be null");
         }
         return null;
     }

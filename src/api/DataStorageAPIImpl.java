@@ -15,7 +15,7 @@ public class DataStorageAPIImpl implements DataStorageAPI {
 
     @Override
     public List<Integer> readInputData(InputConfig inputSource) {
-        if (inputSource == null || inputSource.getSourceDetails() == null) {
+        if (inputSource == null || inputSource.getSourceDetails() == null || inputSource.getSourceDetails().isBlank()) {
             return Collections.emptyList();
         }
 
@@ -34,8 +34,14 @@ public class DataStorageAPIImpl implements DataStorageAPI {
 
     @Override
     public WriteResult writeOutputData(OutputConfig outputDestination, List<String> outputData) {
-        if (outputDestination == null || outputDestination.getDestinationDetails() == null) {
+        if (outputDestination == null) {
             return new WriteResult(WriteResult.Status.FAILURE, "Output destination cannot be null");
+        }
+        if (outputDestination.getDestinationDetails() == null || outputDestination.getDestinationDetails().isBlank()) {
+            return new WriteResult(WriteResult.Status.FAILURE, "Output destination path cannot be null or empty");
+        }
+        if (outputData == null) {
+            return new WriteResult(WriteResult.Status.FAILURE, "Output data cannot be null");
         }
 
         Path path = Paths.get(outputDestination.getDestinationDetails());
@@ -45,8 +51,7 @@ public class DataStorageAPIImpl implements DataStorageAPI {
                 Files.createDirectories(parent);
             }
 
-            List<String> dataToWrite = (outputData != null) ? outputData : Collections.emptyList();
-            String content = String.join(",", dataToWrite);
+            String content = String.join(",", outputData);
             Files.writeString(path, content);
             return new WriteResult(WriteResult.Status.SUCCESS, "Output successfully written to " + path);
         } catch (IOException e) {
