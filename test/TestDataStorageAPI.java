@@ -129,5 +129,21 @@ public class TestDataStorageAPI {
     public void testFileOutputConfigNullPathThrows() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new FileOutputConfig(null));
     }
+
+    @Test
+    public void testReadInputDataInvalidPathReturnsEmptySentinel() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        List<Integer> result = Assertions.assertDoesNotThrow(() -> dataStorage.readInputData(() -> "\0invalid-path"));
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testWriteOutputDataInvalidPathReturnsFailureStatus() {
+        DataStorageAPI dataStorage = new DataStorageAPIImpl();
+        WriteResult result = Assertions.assertDoesNotThrow(() -> dataStorage.writeOutputData(() -> "\0invalid-path", List.of("1", "2")));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(WriteResult.Status.FAILURE, result.getStatus());
+    }
 }
 
