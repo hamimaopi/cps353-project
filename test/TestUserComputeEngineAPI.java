@@ -102,5 +102,29 @@ public class TestUserComputeEngineAPI {
         Assertions.assertEquals(JobResult.Status.FAILURE, response.getStatus());
         Assertions.assertTrue(response.getMessage().contains("Disk full"));
     }
+
+    @Test
+    public void testConstructorNullDependenciesThrow() {
+        DataStorageAPI mockDataStorage = Mockito.mock(DataStorageAPI.class);
+        ComputationAPI mockComputation = Mockito.mock(ComputationAPI.class);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new UserComputeEngineAPIImpl(null, mockComputation));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new UserComputeEngineAPIImpl(mockDataStorage, null));
+    }
+
+    @Test
+    public void testComputeJobNullDelimiterConfigReturnsFailure() {
+        DataStorageAPI mockDataStorage = Mockito.mock(DataStorageAPI.class);
+        ComputationAPI mockComputation = Mockito.mock(ComputationAPI.class);
+        InputConfig mockInputConfig = Mockito.mock(InputConfig.class);
+        OutputConfig mockOutputConfig = Mockito.mock(OutputConfig.class);
+
+        UserComputeEngineAPI engine = new UserComputeEngineAPIImpl(mockDataStorage, mockComputation);
+        JobResult response = engine.configureJob(mockInputConfig, mockOutputConfig, null);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(JobResult.Status.FAILURE, response.getStatus());
+        Assertions.assertTrue(response.getMessage().toLowerCase().contains("delimiter"));
+    }
 }
 

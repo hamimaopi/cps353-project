@@ -6,6 +6,9 @@ public class DelimiterConfig {
     private final boolean isDefault;
 
     public DelimiterConfig(String itemDelimiter, String keyValueDelimiter) {
+        if (itemDelimiter == null || keyValueDelimiter == null) {
+            throw new IllegalArgumentException("Delimiters cannot be null");
+        }
         this.itemDelimiter = itemDelimiter;
         this.keyValueDelimiter = keyValueDelimiter;
         this.isDefault = false;
