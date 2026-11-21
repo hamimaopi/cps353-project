@@ -22,17 +22,19 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
 
     @Override
     public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig) {
-        JobResult validationResult = validateJobParameters(inputSource, outputDestination, delimiterConfig);
-        if (validationResult != null) {
-            return validationResult;
-        }
-
         try {
+            JobResult validationResult = validateJobParameters(inputSource, outputDestination, delimiterConfig);
+            if (validationResult != null) {
+                return validationResult;
+            }
+
             List<Integer> inputs = readInputData(inputSource);
             List<String> outputs = executeComputation(inputs);
             return writeOutputResults(outputDestination, outputs);
         } catch (Exception e) {
-            return new JobResult(JobResult.Status.FAILURE, "Job failed: " + e.getMessage());
+            // Translates both checked and unexpected runtime exceptions into an explicit error response
+            String errorMsg = (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getMessage() : e.getClass().getSimpleName();
+            return new JobResult(JobResult.Status.FAILURE, "Job failed: " + errorMsg);
         }
     }
 
@@ -40,7 +42,12 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
     public JobResult configureJob(InputConfig inputSource, OutputConfig outputDestination) {
         // Delegates to configureJob(InputConfig, OutputConfig, DelimiterConfig) using default DelimiterConfig;
         // parameter validation for inputSource and outputDestination is performed in that method.
-        return configureJob(inputSource, outputDestination, DelimiterConfig.defaultConfig());
+        try {
+            return configureJob(inputSource, outputDestination, DelimiterConfig.defaultConfig());
+        } catch (Exception e) {
+            String errorMsg = (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getMessage() : e.getClass().getSimpleName();
+            return new JobResult(JobResult.Status.FAILURE, "Job failed: " + errorMsg);
+        }
     }
 
     private JobResult validateJobParameters(InputConfig inputSource, OutputConfig outputDestination, DelimiterConfig delimiterConfig) {

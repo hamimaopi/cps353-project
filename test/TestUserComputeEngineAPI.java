@@ -126,5 +126,24 @@ public class TestUserComputeEngineAPI {
         Assertions.assertEquals(JobResult.Status.FAILURE, response.getStatus());
         Assertions.assertTrue(response.getMessage().toLowerCase().contains("delimiter"));
     }
+
+    @Test
+    public void testConfigureJobCatchesUnexpectedComputationException() {
+        DataStorageAPI mockDataStorage = Mockito.mock(DataStorageAPI.class);
+        ComputationAPI mockComputation = Mockito.mock(ComputationAPI.class);
+        InputConfig mockInputConfig = Mockito.mock(InputConfig.class);
+        OutputConfig mockOutputConfig = Mockito.mock(OutputConfig.class);
+
+        Mockito.when(mockDataStorage.readInputData(mockInputConfig)).thenReturn(List.of(10));
+        Mockito.when(mockComputation.countPrimesBelow(Mockito.any(ComputationRequest.class)))
+                .thenThrow(new RuntimeException("Unexpected computation crash"));
+
+        UserComputeEngineAPI engine = new UserComputeEngineAPIImpl(mockDataStorage, mockComputation);
+        JobResult response = Assertions.assertDoesNotThrow(() -> engine.configureJob(mockInputConfig, mockOutputConfig));
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(JobResult.Status.FAILURE, response.getStatus());
+        Assertions.assertTrue(response.getMessage().contains("Unexpected computation crash"));
+    }
 }
 
