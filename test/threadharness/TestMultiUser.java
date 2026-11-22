@@ -4,8 +4,8 @@ import api.ComputationAPI;
 import api.ComputationAPIImpl;
 import api.DataStorageAPI;
 import api.DataStorageAPIImpl;
+import api.MultiThreadedUserComputeEngineAPIImpl;
 import api.UserComputeEngineAPI;
-import api.UserComputeEngineAPIImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class TestMultiUser {
         // Store it in the 'coordinator' instance variable
         DataStorageAPI dataStorage = new DataStorageAPIImpl();
         ComputationAPI computation = new ComputationAPIImpl();
-        this.coordinator = new UserComputeEngineAPIImpl(dataStorage, computation);
+        this.coordinator = new MultiThreadedUserComputeEngineAPIImpl(dataStorage, computation);
     }
 
     @Test
