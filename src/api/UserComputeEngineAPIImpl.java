@@ -68,7 +68,7 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
         return (inputs != null) ? inputs : Collections.emptyList();
     }
 
-    private List<String> executeComputation(List<Integer> inputs) {
+    protected List<String> executeComputation(List<Integer> inputs) throws Exception {
         List<String> results = new ArrayList<>();
         for (Integer inputNumber : inputs) {
             ComputationRequest request = new ComputationRequest(inputNumber);
@@ -77,6 +77,10 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
             results.add(String.valueOf(primeCount));
         }
         return results;
+    }
+
+    protected ComputationAPI getComputationAPI() {
+        return computationAPI;
     }
 
     private JobResult writeOutputResults(OutputConfig outputDestination, List<String> outputs) {

@@ -35,3 +35,13 @@ Each boundary features explicit request and response flows.
 - **Network API (`UserComputeEngineAPI`)**: Uses generic `InputConfig` and `OutputConfig` objects instead of hardcoded strings. Supports both custom delimiters via `DelimiterConfig` and optional default delimiters (`DelimiterConfig.defaultConfig()`).
 - **Process API (`DataStorageAPI`)**: Provides methods to read input data (`readInputData`) AND write computed results back out (`writeOutputData`) using generic `InputConfig` and `OutputConfig` location objects.
 - **Conceptual API (`ComputationAPI`)**: Operates inside the Compute Engine process. Wraps primitive values inside flexible objects (`ComputationRequest` and `ComputationResult`).
+
+---
+
+## Checkpoint 6: Multi-Threading Configuration
+
+### Thread Pool Upper Bound
+The multi-threaded coordinator implementation (`MultiThreadedUserComputeEngineAPIImpl`) uses a fixed thread pool created via `Executors.newFixedThreadPool(4)`.
+- **Upper Bound**: 4 concurrent worker threads.
+- **Rationale**: Prime-counting is a CPU-intensive operation. Setting an upper bound of 4 threads balances parallelism across common modern quad-core and multi-core CPU architectures while preventing thread creation explosion, thread thrashing, and excessive CPU context-switching overhead.
+- **Deterministic Ordering**: Subtask executions are collected in input order using `List<Future<String>>` and resolved sequentially, ensuring multi-threaded outputs match single-threaded outputs exactly.

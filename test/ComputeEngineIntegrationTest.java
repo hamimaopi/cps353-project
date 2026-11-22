@@ -1,6 +1,7 @@
 import api.ComputationAPI;
 import api.ComputationAPIImpl;
 import api.DataStorageAPI;
+import api.MultiThreadedUserComputeEngineAPIImpl;
 import api.UserComputeEngineAPI;
 import api.UserComputeEngineAPIImpl;
 
@@ -99,5 +100,41 @@ public class ComputeEngineIntegrationTest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(api.JobResult.Status.FAILURE, result.getStatus());
         Assertions.assertTrue(result.getMessage().contains("Simulated disk write failure"));
+    }
+
+    @Test
+    public void testMultiThreadedComputeEngineIntegration() {
+        DataStorageAPI testDataStore = new InMemoryDataStorage();
+        ComputationAPI realComputation = new ComputationAPIImpl();
+        UserComputeEngineAPI multiThreadedEngine = new MultiThreadedUserComputeEngineAPIImpl(testDataStore, realComputation);
+
+        InMemoryInputConfig inputConfig = new InMemoryInputConfig(List.of(1, 10, 25, 5, 20));
+        InMemoryOutputConfig outputConfig = new InMemoryOutputConfig();
+
+        multiThreadedEngine.configureJob(inputConfig, outputConfig);
+
+        Assertions.assertEquals(List.of("0", "4", "9", "2", "8"), outputConfig.getOutputs());
+    }
+
+    @Test
+    public void testMultiThreadedComputeEngineExceptionHandled() {
+        DataStorageAPI testDataStore = new InMemoryDataStorage();
+        ComputationAPI failingComputation = new ComputationAPI() {
+            @Override
+            public api.ComputationResult countPrimesBelow(api.ComputationRequest request) {
+                throw new RuntimeException("Simulated worker thread crash");
+            }
+        };
+
+        UserComputeEngineAPI multiThreadedEngine = new MultiThreadedUserComputeEngineAPIImpl(testDataStore, failingComputation);
+
+        InMemoryInputConfig inputConfig = new InMemoryInputConfig(List.of(10));
+        InMemoryOutputConfig outputConfig = new InMemoryOutputConfig();
+
+        api.JobResult result = Assertions.assertDoesNotThrow(() -> multiThreadedEngine.configureJob(inputConfig, outputConfig));
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(api.JobResult.Status.FAILURE, result.getStatus());
+        Assertions.assertTrue(result.getMessage().contains("Simulated worker thread crash"));
     }
 }
