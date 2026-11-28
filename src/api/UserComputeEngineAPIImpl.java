@@ -30,7 +30,7 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
 
             List<Integer> inputs = readInputData(inputSource);
             List<String> outputs = executeComputation(inputs);
-            return writeOutputResults(outputDestination, outputs);
+            return writeOutputResults(outputDestination, outputs, delimiterConfig);
         } catch (Exception e) {
             // Translates both checked and unexpected runtime exceptions into an explicit error response
             String errorMsg = (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getMessage() : e.getClass().getSimpleName();
@@ -83,8 +83,20 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
         return computationAPI;
     }
 
-    private JobResult writeOutputResults(OutputConfig outputDestination, List<String> outputs) {
-        WriteResult writeResult = dataStorageAPI.writeOutputData(outputDestination, outputs);
+    private JobResult writeOutputResults(
+            OutputConfig outputDestination,
+            List<String> outputs,
+            DelimiterConfig delimiterConfig) {
+        OutputConfig effectiveDestination = outputDestination;
+        if (outputDestination instanceof FileOutputConfig fileOutput
+                && (fileOutput.getDelimiter() == null || fileOutput.getDelimiter().isEmpty())
+                && delimiterConfig != null
+                && !delimiterConfig.isDefault()) {
+            effectiveDestination = new FileOutputConfig(
+                    fileOutput.getDestinationDetails(),
+                    delimiterConfig.getItemDelimiter());
+        }
+        WriteResult writeResult = dataStorageAPI.writeOutputData(effectiveDestination, outputs);
         if (writeResult != null && writeResult.getStatus() == WriteResult.Status.FAILURE) {
             return new JobResult(JobResult.Status.FAILURE, writeResult.getMessage());
         }

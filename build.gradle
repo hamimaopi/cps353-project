@@ -1,19 +1,32 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'com.google.protobuf' version '0.9.4'
+}
 
 eclipse.project.name = 'cps353-project'
 
+def grpcVersion = '1.68.1'
+def protobufVersion = '3.25.5'
+
 sourceSets {
-	main {
-	  java {
-		srcDirs = ['src']
-	  }
-	}
-	test {
-	  java {
-	     srcDirs = ['test']
-	  }
-	 }
+    main {
+        java {
+            srcDirs = [
+                'src',
+                'build/generated/source/proto/main/java',
+                'build/generated/source/proto/main/grpc'
+            ]
+        }
+        proto {
+            srcDirs = ['proto']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
 }
 
 repositories {
@@ -21,10 +34,37 @@ repositories {
 }
 
 dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.2')
-	testImplementation('org.mockito:mockito-core:5.10.0')
-	testImplementation('fr.inria.gforge.spoon:spoon-core:10.4.0')
-	implementation('com.google.code.gson:gson:2.13.1')
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'com.google.code.gson:gson:2.13.1'
+
+    testImplementation "io.grpc:grpc-inprocess:${grpcVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-core:5.10.0'
+    testImplementation 'fr.inria.gforge.spoon:spoon-core:10.4.0'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn tasks.named('generateProto')
 }
 
 test {
@@ -33,4 +73,11 @@ test {
         // Exclude Checkpoint 1 test (gets rate-limited by GitHub API in CI)
         excludeTestsMatching "Checkpoint1TestSuite"
     }
+}
+
+tasks.register('runDataStorageServer', JavaExec) {
+    group = 'application'
+    description = 'Runs the standalone Data Storage gRPC server'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'api.grpc.DataStorageServer'
 }

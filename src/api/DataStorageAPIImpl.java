@@ -15,6 +15,9 @@ public class DataStorageAPIImpl implements DataStorageAPI {
     @Override
     public List<Integer> readInputData(InputConfig inputSource) {
         try {
+            if (inputSource instanceof ListInputConfig listInput) {
+                return listInput.getNumbers();
+            }
             if (inputSource == null || inputSource.getSourceDetails() == null || inputSource.getSourceDetails().isBlank()) {
                 return Collections.emptyList();
             }
@@ -52,7 +55,14 @@ public class DataStorageAPIImpl implements DataStorageAPI {
                 Files.createDirectories(parent);
             }
 
-            String content = String.join(",", outputData);
+            String delimiter = ",";
+            if (outputDestination instanceof FileOutputConfig fileOutput
+                    && fileOutput.getDelimiter() != null
+                    && !fileOutput.getDelimiter().isEmpty()) {
+                delimiter = fileOutput.getDelimiter();
+            }
+
+            String content = String.join(delimiter, outputData);
             Files.writeString(path, content);
             return new WriteResult(WriteResult.Status.SUCCESS, "Output successfully written to " + path);
         } catch (Exception e) {
