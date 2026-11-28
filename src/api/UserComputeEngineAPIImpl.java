@@ -100,7 +100,7 @@ public class UserComputeEngineAPIImpl implements UserComputeEngineAPI {
         if (writeResult != null && writeResult.getStatus() == WriteResult.Status.FAILURE) {
             return new JobResult(JobResult.Status.FAILURE, writeResult.getMessage());
         }
-        return new JobResult(JobResult.Status.SUCCESS, "Job completed successfully");
+        return new JobResult(JobResult.Status.SUCCESS, "Job completed successfully", outputs);
     }
 }
 

@@ -81,3 +81,10 @@ tasks.register('runDataStorageServer', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'api.grpc.DataStorageServer'
 }
+
+tasks.register('runComputeEngineServer', JavaExec) {
+    group = 'application'
+    description = 'Runs the standalone Compute Engine gRPC server'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'api.grpc.ComputeEngineServer'
+}
