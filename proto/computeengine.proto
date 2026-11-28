@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "api.grpc.proto";
+option java_outer_classname = "ComputeEngineProto";
+
+package computeengine;
+
+service ComputeEngineService {
+  rpc SubmitJob (ComputeJobRequest) returns (ComputeJobResponse);
+}
+
+message InlineNumbers {
+  repeated int32 numbers = 1;
+}
+
+message ComputeJobRequest {
+  oneof input_source {
+    string input_file_path = 1;
+    InlineNumbers inline_numbers = 2;
+  }
+  string output_file_path = 3;
+  string delimiter = 4;
+}
+
+message ComputeJobResponse {
+  bool success = 1;
+  string message = 2;
+  repeated string results = 3;
+}
