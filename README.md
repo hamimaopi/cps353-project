@@ -45,3 +45,37 @@ The multi-threaded coordinator implementation (`MultiThreadedUserComputeEngineAP
 - **Upper Bound**: 4 concurrent worker threads.
 - **Rationale**: Prime-counting is a CPU-intensive operation. Setting an upper bound of 4 threads balances parallelism across common modern quad-core and multi-core CPU architectures while preventing thread creation explosion, thread thrashing, and excessive CPU context-switching overhead.
 - **Deterministic Ordering**: Subtask executions are collected in input order using `List<Future<String>>` and resolved sequentially, ensuring multi-threaded outputs match single-threaded outputs exactly.
+
+---
+
+## Checkpoint 7: gRPC Network & Process Architecture
+
+The system runs across three independent processes communicating over gRPC and Protocol Buffers:
+1. **Data Storage Server** (`api.grpc.DataStorageServer`, default port `50052`): Exposes `DataStorageService` (`proto/datastorage.proto`) wrapping `DataStorageAPIImpl`.
+2. **Compute Engine Server** (`api.grpc.ComputeEngineServer`, default port `50051`): Exposes `ComputeEngineService` (`proto/computeengine.proto`) backed by `MultiThreadedUserComputeEngineAPIImpl` and connects to the Data Storage process via `GrpcDataStorageClient` (`DataStorageAPI`).
+3. **User Frontend Client** (`api.grpc.ComputeEngineClient`): Accepts either an input file path or a typed-in list of numbers, an output file path, and an optional output delimiter (via interactive `Scanner` prompts or CLI flags).
+
+### Running the 3 Processes End-to-End
+Open three separate terminals in the project root:
+
+1. **Start the Data Storage server** (default port `50052`):
+   ```bash
+   ./gradlew runDataStorageServer
+   ```
+2. **Start the Compute Engine server** (default port `50051`, connecting to `localhost:50052`):
+   ```bash
+   ./gradlew runComputeEngineServer
+   ```
+3. **Run the User Client**:
+   - **Interactive prompts**:
+     ```bash
+     ./gradlew runComputeClient --console=plain
+     ```
+   - **CLI arguments (file input)**:
+     ```bash
+     ./gradlew runComputeClient --args="--input-file test/testInputFile.test --output-file manualTestOutput.txt"
+     ```
+   - **CLI arguments (typed-in in-memory numbers with custom delimiter)**:
+     ```bash
+     ./gradlew runComputeClient --args="--numbers 1,10,20 --output-file manualTestOutput.txt --delimiter ;"
+     ```

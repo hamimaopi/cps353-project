@@ -51,7 +51,7 @@ public class DataStorageAPIImpl implements DataStorageAPI {
 
             Path path = Paths.get(outputDestination.getDestinationDetails());
             Path parent = path.getParent();
-            if (parent != null) {
+            if (parent != null && !Files.isDirectory(parent)) {
                 Files.createDirectories(parent);
             }
 

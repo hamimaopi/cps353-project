@@ -88,3 +88,11 @@ tasks.register('runComputeEngineServer', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'api.grpc.ComputeEngineServer'
 }
+
+tasks.register('runComputeClient', JavaExec) {
+    group = 'application'
+    description = 'Runs the interactive Compute Engine gRPC client'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'api.grpc.ComputeEngineClient'
+    standardInput = System.in
+}
